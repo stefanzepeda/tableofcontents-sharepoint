@@ -1,0 +1,282 @@
+<style>
+  #toc {
+
+    display: table;
+
+    border: 1px solid #aaa;
+
+    background-color: #f9f9f9;
+
+    font-size: 95%;
+
+    padding: 7px;
+  }
+
+  #toc #tocHeader {
+
+    font-weight: bold;
+
+    text-align: center;
+  }
+
+  #toc a:before {
+    /* content:"• "; */
+  }
+
+  #toc a {
+    line-height: 15px;
+    margin: 10px;
+    cursor: pointer;
+  }
+
+  .tocHidden{
+    display:none;
+  }
+  h1,h2,h3,h4,h5,h6 {
+        color: #000;
+        background: none;
+        font-weight: normal;
+        margin: 0;
+        overflow: hidden;
+        padding-top: 0.5em;
+        padding-bottom: 0.17em;
+        border-bottom: 1px solid #a2a9b1
+    }
+    body{
+          color: #222222;
+          font-family: sans-serif;
+    }
+    h1 {
+        font-size: 188%
+    }
+
+    h2 {
+        font-size: 150%
+    }
+
+    h3,h4,h5,h6 {
+        border-bottom: 0;
+        font-weight: bold
+    }
+
+    h3 {
+        font-size: 100%;
+        font-family: sans-serif;
+
+    }
+
+    h4 {
+        font-size: 116%
+    }
+
+    h5 {
+        font-size: 108%
+    }
+
+    h6 {
+        font-size: 100%
+    }
+
+    h1,h2 {
+        margin-bottom: 0.6em
+    }
+
+    h3,h4,h5 {
+        margin-bottom: 0.3em
+    }
+
+
+
+    p {
+        line-height: inherit;
+        margin: 0.5em 0;
+        color: #222222;
+        font-family:sans-serif;
+    }
+
+    p img {
+        margin: 0
+    }
+
+    ul {
+        list-style-type: square;
+        margin: 0.3em 0 0 1.6em;
+        padding: 0
+    }
+
+    ol {
+        margin: 0.3em 0 0 3.2em;
+        padding: 0;
+        list-style-image: none
+    }
+
+    li {
+        margin-bottom: 0.1em
+    }
+
+    dt {
+        font-weight: bold;
+        margin-bottom: 0.1em
+    }
+
+    dl {
+        margin-top: 0.2em;
+        margin-bottom: 0.5em
+    }
+
+    dd {
+        margin-left: 1.6em;
+        margin-bottom: 0.1em
+    }
+
+    pre,code,tt,kbd,samp,.mw-code {
+        font-family: monospace,monospace
+    }
+
+    code {
+        color: #000;
+        background-color: #f8f9fa;
+        border: 1px solid #eaecf0;
+        border-radius: 2px;
+        padding: 1px 4px
+    }
+
+    pre,.mw-code {
+        color: #000;
+        background-color: #f8f9fa;
+        border: 1px solid #eaecf0;
+        padding: 1em;
+        white-space: pre-wrap
+    }
+
+    table {
+        font-size: 100%
+    }
+
+    fieldset {
+        border: 1px solid #2a4b8d;
+        margin: 1em 0 1em 0;
+        padding: 0 1em 1em
+    }
+
+    fieldset.nested {
+        margin: 0 0 0.5em 0;
+        padding: 0 0.5em 0.5em
+    }
+
+    legend {
+        padding: 0.5em;
+        font-size: 95%
+    }
+
+    form {
+        border: 0;
+        margin: 0
+    }
+
+    textarea {
+        width: 100%;
+        padding: 0.1em;
+        display: block;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box
+    }
+
+    .center {
+        width: 100%;
+        text-align: center
+    }
+
+    *.center * {
+        margin-left: auto;
+        margin-right: auto
+    }
+
+    .small {
+        font-size: 94%
+    }
+
+    table.small {
+        font-size: 100%
+    }
+
+    .ms-wikicontent h1,.ms-wikicontent h1,.ms-wikicontent h2 {
+        font-family: 'Linux Libertine','Georgia','Times',serif;
+        line-height: 1.3;
+        margin-bottom: 0.25em;
+        padding: 0;
+    }
+    .ms-rtestate-field h1, h1.ms-rteElement-H1, .ms-rtestate-field h2, h2.ms-rteElement-H2 {
+    line-height: 1.4;
+    color: #000;
+}
+
+
+</style>
+
+<div id="toc"></div>
+
+<script
+  src="https://code.jquery.com/jquery-2.2.4.min.js"
+  integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+
+<script type="text/javascript">
+  function GenerateTOC() {
+    var headerTOC = $('<p id="tocHeader">Contents</p>');
+    $("#toc").append(headerTOC);
+    headerTOC.append('<span >&nbsp;[<a id="hideLink" class="togglelink">Hide</a>]&nbsp;</span>').on('click','a',toggleTOC);
+
+    var levels = [
+      $("#toc"),
+      null,
+      null,
+      null,
+      null
+    ];
+    var prevLvl = null;
+    var currNode = $("#toc");
+
+    $(".ms-wikicontent  h1, .ms-wikicontent  h2, .ms-wikicontent  h3, .ms-wikicontent h4").each(function(i) {
+
+      var currentNode = $(this);
+      currentNode.attr("id", "title" + i);
+      var lvl = currentNode.prop("tagName")[currentNode.prop("tagName").length-1];
+
+      if (lvl < prevLvl) {
+        //clear levels
+        levels = levels.map(function(cv, ci, arr) {
+          if (ci > lvl)
+            return null;
+
+          return cv;
+        });
+      }
+      if (lvl && !levels[lvl]) {
+        //level doesn't exist, create it and append to higher level
+        levels[lvl] = currNode.append('<ol></ol>').find('ol');
+      }
+      currNode = $("<li><a id='link'" + i + "' href='#title" + i + "' title='" + currentNode.html() + "'>" + currentNode.html() + "</a></li>");
+      //append item to level
+      levels[lvl].append(currNode);
+      //reset
+      prevLvl = lvl;
+      //currentNode.append(" <a href='#tocHeader'>[top]</a>");
+    });
+
+    $("#toc").append("<div style='padding-bottom:20px;'/>")
+  }
+
+  var toggleTOC = function toggleTOC(){
+      $("#toc").children('ol').first().toggleClass('tocHidden');
+      var linkText = $("#hideLink").text()=='Hide'?'Show':'Hide';
+      $("#hideLink").text(linkText);
+  };
+
+  $(document).ready(function() {
+
+    _spBodyOnLoadFunctionNames.push('GenerateTOC');
+
+  });
+</script>
